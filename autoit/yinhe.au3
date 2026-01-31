@@ -565,56 +565,43 @@ Func _yinheClickFund($hWnd, $idDebug, $strType)
 EndFunc
 
 Func _getFundAmount($strSymbol)
- $strAmount = '100'
-  Switch $strSymbol
-    Case '501300'
-      $strAmount = '100'
-    Case '164906'
-      $strAmount = '10000'
-    Case '501018'
-      $strAmount = '100'
-    Case '160216'
-      $strAmount = '10000'
-    Case '160416'
-      $strAmount = '2000'
-    Case '161116'
-      $strAmount = '100'
-    Case '161124'
-      $strAmount = '100'
-    Case '161129'
-      $strAmount = '100'
-    Case '161125'
-      $strAmount = '100'
-    Case '161126'
-      $strAmount = '100'
-    Case '161127'
-      $strAmount = '100'
-    Case '161128'
-      $strAmount = '100'
-    Case '161130'
-      $strAmount = '100'
-    Case '161226'
-      $strAmount = '50000'
-    Case '162411'
-      $strAmount = '100'
-    Case '163208'
-      $strAmount = '100'
-    Case '164824'
-      $strAmount = '100'
-    Case '162415'
-      $strAmount = '100'
-    Case '164906'
-      $strAmount = '5000'
-    Case '501225'
-      $strAmount = '1000'
-  EndSwitch
-  return $strAmount
+	Switch $strSymbol
+		Case '160216'
+			$strAmount = '1000'
+		Case '160416'
+			$strAmount = '5000'
+		Case '161125'
+			$strAmount = '10'
+		Case '161128'
+			$strAmount = '10'
+		Case '161129'
+			$strAmount = '20'
+		Case '161130'
+			$strAmount = '10'
+		Case '161226'
+			$strAmount = '500'
+		Case '162411'
+			$strAmount = '10'
+		Case '162415'
+			$strAmount = '10'
+		Case '164701'
+        	$strAmount = '10'
+		Case '164906'
+			$strAmount = '1000000'
+		Case '501018'
+			$strAmount = '1000'
+		Case '501225'
+			$strAmount = '1000'
+		Case Else
+			$strAmount = '100'
+	EndSwitch
+	return $strAmount
 EndFunc
 
 Func YinheOrderOutTransferFund($hWnd, $idDebug, $strSymbol)
     _CtlDebug($idDebug, "YinheOrderOutTransferFund start...")
     ; 获取 Afx 控件句柄
-    Local $controlID = "[CLASS:Afx:10000000:0:10003:0:0; INSTANCE:1]" ; 根据实际类名和实例号替换
+    Local $controlID = "[CLASS:Afx:10000000:0:00010003:00000000:00000000; INSTANCE:1]" ; 根据实际类名和实例号替换
     Local $hControl = ControlGetHandle($hWnd, "", $controlID)
 
     ; 确保控件句柄有效
@@ -672,7 +659,7 @@ EndFunc
 Func YinheOrderOutFund($hWnd, $idDebug, $strSymbol)
     _CtlDebug($idDebug, "YinheOrderOutFund start...")
     ; 获取 Afx 控件句柄
-    Local $controlID = "[CLASS:Afx:10000000:0:10003:0:0; INSTANCE:1]" ; 根据实际类名和实例号替换
+    Local $controlID = "[CLASS:Afx:10000000:0:00010003:00000000:00000000; INSTANCE:1]" ; 根据实际类名和实例号替换
     Local $hControl = ControlGetHandle($hWnd, "", $controlID)
 
     ; 确保控件句柄有效
@@ -687,6 +674,7 @@ Func YinheOrderOutFund($hWnd, $idDebug, $strSymbol)
 
     $strControlID = 'SysTreeView323'
     _clickTreeItemOut($hWnd, $idDebug, $strControlID, '基金申购')
+	Sleep(1000)
     _CtlWaitText($hWnd, $idDebug, 'Static1', '基金代码:')
 
     $controlID = "Edit1"
@@ -990,7 +978,12 @@ Func YinheRedeemFund($hWnd, $idDebug, $strSymbol, $strSellQuantity, ByRef $iRema
 EndFunc
 
 Func _sendSellSymbol($hWnd, $iSoftware, $idDebug, $strSymbol)
-	If _CtlSendString($hWnd, $idDebug, 'AfxWnd423', $strSymbol) Then _addSymbolSpecialKey($iSoftware, $idDebug, $strSymbol)
+	If ($iSoftware == $YINHE)	Then
+		$strControl = 'AfxWnd421'
+	Else
+		$strControl = 'AfxWnd423'
+	EndIf
+	If _CtlSendString($hWnd, $idDebug, $strControl, $strSymbol) Then _addSymbolSpecialKey($iSoftware, $idDebug, $strSymbol)
 EndFunc
 
 Func _getSellStaticIndex($iSoftware, $iIndex)
@@ -1139,7 +1132,7 @@ Func RunCashBack($hWnd, $idDebug, $strPassword)
 		$strCash = ControlGetText($hWnd, '', 'Static13')
 	Until $strCash <> ''
 	If Number($strCash, 3) > 0.009 Then
-		_CtlSendPassword($hWnd, $idDebug, 'AfxWnd424', $strPassword)
+		_CtlSendPassword($hWnd, $idDebug, 'AfxWnd422', $strPassword)
 		_CtlSetText($hWnd, $idDebug, 'Edit1', $strCash)
 		ControlClick($hWnd, '', 'Button1')
 		Sleep(1000)
@@ -1163,7 +1156,7 @@ Func _addOtherAccount($hWnd, $iSoftware, $idDebug, $strAccount, $strPassword)
 	Send('{ENTER}')
 	Sleep(1000)
 	_closeNewDlg($idDebug)
-	_loginDlg($iSoftware, $idDebug, '添加帐号', $strAccount, $strPassword)
+	_loginDlg($iSoftware, $idDebug, '加账号', $strAccount, $strPassword)
 EndFunc
 
 Func RunLoginOnly($hWnd, $idProgress, $iSoftware, $idDebug, Const ByRef $arAccountNumber, Const ByRef $arAccountPassword, Const ByRef $arAccountChecked, $iMax, $iCur)
@@ -1420,7 +1413,7 @@ Func _loadListViewAccount($iSoftware, $idListViewAccount, ByRef $arCheckboxAccou
 EndFunc
 
 Func AppMain()
-	$idFormMain = GUICreate("通达信单独委托版全自动拖拉机0.88", 803, 590, 289, 0)
+	$idFormMain = GUICreate("通达信单独委托版全自动拖拉机0.99", 803, 590, 289, 0)
 
 	$idListViewAccount = GUICtrlCreateListView("客户号", 24, 24, 146, 552, BitOR($GUI_SS_DEFAULT_LISTVIEW,$WS_VSCROLL), BitOR($WS_EX_CLIENTEDGE,$LVS_EX_CHECKBOXES))
 	GUICtrlSendMsg(-1, $LVM_SETCOLUMNWIDTH, 0, 118)
@@ -1431,7 +1424,7 @@ Func AppMain()
 
 	$idLabelSymbol = GUICtrlCreateLabel("基金代码", 192, 24, 52, 17)
 	$idListSymbol = GUICtrlCreateList("", 192, 48, 121, 97)
-	GUICtrlSetData(-1, '160216|160416|160717|161116|161124|161125|161126|161127|161128|161129|161130|161226|162411|162415|163208|164824|164906|501225|501300|501018', _getProfileString('Symbol', '161116'))
+	GUICtrlSetData(-1, '160216|160416|160717|161116|161124|161125|161126|161127|161128|161129|161130|161226|162411|162415|163208|164824|164906|501225|501300|501018|501312', _getProfileString('Symbol', '161116'))
 
 	$idLabelSellPrice = GUICtrlCreateLabel("卖出价格", 192, 160, 52, 17)
 	$idInputSellPrice = GUICtrlCreateInput("", 192, 184, 121, 21)
@@ -1450,9 +1443,9 @@ Func AppMain()
 
 	$GroupSoftware = GUICtrlCreateGroup("软件", 336, 400, 225, 81)
 	$iSoftware = 0
-	$RadioYinhe = GUICtrlCreateRadio("银河证券海王星单独委托版3.23", 352, 424, 193, 17)
+	$RadioYinhe = GUICtrlCreateRadio("银河证券海王星单独委托版3.29", 352, 424, 193, 17)
 	GUICtrlSetState(-1, _getRadioState($RadioYinhe, $iSoftware, 'Yinhe', $GUI_CHECKED))
-	$RadioHuabao = GUICtrlCreateRadio("华宝证券通达信版独立交易8.25", 352, 448, 193, 17)
+	$RadioHuabao = GUICtrlCreateRadio("华宝证券通达信版独立交易8.28", 352, 448, 193, 17)
 	GUICtrlSetState(-1, _getRadioState($RadioHuabao, $iSoftware, 'Huabao', $GUI_UNCHECKED))
 	GUICtrlCreateGroup("", -99, -99, 1, 1)
 	$iMax = _onRadioSoftware($iSoftware, $RadioYinhe, $RadioHuabao)
